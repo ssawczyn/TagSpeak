@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">TagSpeak</string>
+    <string name="tab_write">Write Label</string>
+    <string name="tab_inspect">Read &amp; Inspect</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="write_heading">Create or Edit Sticker Label</string>
+    <string name="label_input_title">Spoken Label Text</string>
+    <string name="label_input_placeholder">Enter label, for example: Cinnamon, expires May 2027</string>
+    <string name="clear_label_button">Clear label text</string>
+    <string name="write_to_sticker_button">Write Label to Sticker</string>
+    <string name="cancel_write_button">Cancel Waiting for Sticker</string>
+    <string name="scan_to_edit_button">Scan Existing Sticker to Edit</string>
+    <string name="cancel_scan_to_edit_button">Cancel Scan to Edit</string>
+
+    <string name="overwrite_warning_title">Existing Label Detected on Sticker</string>
+    <string name="confirm_overwrite_button">Confirm Overwrite</string>
+    <string name="cancel_overwrite_button">Cancel Overwrite</string>
+
+    <string name="inspect_heading">Inspected Sticker Details</string>
+    <string name="inspect_empty_message">No sticker scanned in this session yet. Touch your phone to any TagSpeak NFC sticker while the app is open to inspect or edit its label.</string>
+    <string name="speak_label_again_button">Speak Label Aloud</string>
+    <string name="edit_scanned_label_button">Edit or Rewrite This Label</string>
+
+    <string name="settings_heading">Accessibility &amp; NFC Settings</string>
+    <string name="setting_confirm_overwrite_title">Confirm before overwriting an existing label</string>
+    <string name="setting_confirm_overwrite_desc">Ask for confirmation before replacing a sticker that already has a written label</string>
+    <string name="setting_speak_after_write_title">Speak confirmation after writing a sticker</string>
+    <string name="setting_speak_after_write_desc">Automatically announce when a label has been written to a sticker</string>
+    <string name="setting_speech_rate_heading">TagSpeak Speech Speed</string>
+    <string name="test_speech_button">Test Speech Output</string>
+</resources>
