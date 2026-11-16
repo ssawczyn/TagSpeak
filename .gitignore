@@ -14,3 +14,5 @@ app/build/
 *.jks
 *.keystore
 keystore.properties
+/play-store-assets/
+
