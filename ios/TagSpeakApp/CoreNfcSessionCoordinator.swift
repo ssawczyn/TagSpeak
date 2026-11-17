@@ -1,5 +1,5 @@
 #if canImport(CoreNFC)
-import CoreNFC
+@preconcurrency import CoreNFC
 #endif
 import Foundation
 #if canImport(TagSpeakCore)

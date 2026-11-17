@@ -28,7 +28,18 @@ jobs:
         working-directory: ios
         run: |
           xcrun --sdk iphonesimulator swiftc \
-            -target arm64-apple-ios16.0-simulator \
+            -target arm64-apple-ios17.0-simulator \
             -typecheck \
             Sources/TagSpeakCore/*.swift \
             TagSpeakApp/*.swift
+
+      - name: Build iOS App Target (Simulator, Unsigned)
+        working-directory: ios
+        run: |
+          xcodebuild \
+            -project TagSpeak.xcodeproj \
+            -scheme TagSpeak \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build
