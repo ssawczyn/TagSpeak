@@ -44,6 +44,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tagspeak.app
+        DEVELOPMENT_TEAM: RD65N62WBS
+        CODE_SIGN_STYLE: Automatic
         INFOPLIST_FILE: TagSpeakApp/Info.plist
         CODE_SIGN_ENTITLEMENTS: TagSpeakApp/TagSpeak.entitlements
         SWIFT_VERSION: "5.10"
