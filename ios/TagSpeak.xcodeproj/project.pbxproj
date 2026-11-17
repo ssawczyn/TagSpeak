@@ -1,0 +1,488 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		22FD68EADA29CF5790053654 /* MainScreenViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8264C0AEC680944C3179091A /* MainScreenViewModelTests.swift */; };
+		32CDCA1F08EF65CDB41EB488 /* ReadStickerIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5EB8147939EADFA318232 /* ReadStickerIntent.swift */; };
+		35F10709D70D09DF86662292 /* TagSpeakNdefCodecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2604E1194D249FB44783AE /* TagSpeakNdefCodecTests.swift */; };
+		3B720F42ACA56082E7325D49 /* MainScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D249CF049795F7D9182C100 /* MainScreenView.swift */; };
+		574226B969EADF47F87945B8 /* TagSpeakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB210E5BAB8132C24E1E78BB /* TagSpeakApp.swift */; };
+		75CFE733C0219E6B029A389D /* CoreNfcSessionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82EEB5A41C87A13BBC371E6 /* CoreNfcSessionCoordinator.swift */; };
+		7BEAC72C6F016C32ADDC78FA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846AF689C4507331FE08736D /* AVFoundation.framework */; };
+		8D01472876F359AB020C64A1 /* IOSSpeechAnnouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343BE8463BEA7AED36197DD6 /* IOSSpeechAnnouncer.swift */; };
+		AD4F2DC0C0C7726B3E7DBD99 /* CoreNFC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32A1DAD3A7F2AE511F926B5E /* CoreNFC.framework */; };
+		E95C2575850FE30583C05830 /* TagSpeakCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8E4892EC7CBBF265D35C7AC8 /* TagSpeakCore */; };
+		EC3FE456DF0F801C31B9D05B /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA92CCF81BB3B09CB233B9F4 /* AppIntents.framework */; };
+		EF60AEC695A444E89E393E35 /* TagSpeakCore in Frameworks */ = {isa = PBXBuildFile; productRef = 898193FC97FA24410F4DF7DE /* TagSpeakCore */; };
+		FC08890AD5B1A8D35E309684 /* CLITestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9563786B195C0B12976168F /* CLITestHarness.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BD248AC9A7D0608FCD86DAED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1F444297539DD6FF2F5ADCCF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5B8FF15D6E7B79B07B2763E9;
+			remoteInfo = TagSpeak;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		06B5EB8147939EADFA318232 /* ReadStickerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadStickerIntent.swift; sourceTree = "<group>"; };
+		32A1DAD3A7F2AE511F926B5E /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = System/Library/Frameworks/CoreNFC.framework; sourceTree = SDKROOT; };
+		343BE8463BEA7AED36197DD6 /* IOSSpeechAnnouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSpeechAnnouncer.swift; sourceTree = "<group>"; };
+		8264C0AEC680944C3179091A /* MainScreenViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenViewModelTests.swift; sourceTree = "<group>"; };
+		846AF689C4507331FE08736D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		8CDD9B4C8BDC29A71B35DC78 /* TagSpeakTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TagSpeakTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D249CF049795F7D9182C100 /* MainScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenView.swift; sourceTree = "<group>"; };
+		8D98A42725785EC223CAE45F /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ios; path = .; sourceTree = SOURCE_ROOT; };
+		A6F8E36FB300B1938B1DB4AC /* TagSpeak.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TagSpeak.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B82EEB5A41C87A13BBC371E6 /* CoreNfcSessionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreNfcSessionCoordinator.swift; sourceTree = "<group>"; };
+		BB210E5BAB8132C24E1E78BB /* TagSpeakApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagSpeakApp.swift; sourceTree = "<group>"; };
+		CA92CCF81BB3B09CB233B9F4 /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
+		DF2604E1194D249FB44783AE /* TagSpeakNdefCodecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagSpeakNdefCodecTests.swift; sourceTree = "<group>"; };
+		E9563786B195C0B12976168F /* CLITestHarness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLITestHarness.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0D8BCD077CF2B3B75D533ECC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF60AEC695A444E89E393E35 /* TagSpeakCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E1A98FBAC5FC53ED6185CEB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E95C2575850FE30583C05830 /* TagSpeakCore in Frameworks */,
+				AD4F2DC0C0C7726B3E7DBD99 /* CoreNFC.framework in Frameworks */,
+				7BEAC72C6F016C32ADDC78FA /* AVFoundation.framework in Frameworks */,
+				EC3FE456DF0F801C31B9D05B /* AppIntents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1400D3C0F6DD11F570B74E40 /* TagSpeakCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				E9563786B195C0B12976168F /* CLITestHarness.swift */,
+				8264C0AEC680944C3179091A /* MainScreenViewModelTests.swift */,
+				DF2604E1194D249FB44783AE /* TagSpeakNdefCodecTests.swift */,
+			);
+			name = TagSpeakCoreTests;
+			path = Tests/TagSpeakCoreTests;
+			sourceTree = "<group>";
+		};
+		2DB67AEFED38F3D69B727611 = {
+			isa = PBXGroup;
+			children = (
+				CCF1A3A84A97781CC412F2AB /* Packages */,
+				9B415E9111D3A5B6C17C44DC /* TagSpeakApp */,
+				1400D3C0F6DD11F570B74E40 /* TagSpeakCoreTests */,
+				AEB9A484B6A160DF5D13C7A9 /* Frameworks */,
+				E416B4A194B0770F8A8A22F3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9B415E9111D3A5B6C17C44DC /* TagSpeakApp */ = {
+			isa = PBXGroup;
+			children = (
+				B82EEB5A41C87A13BBC371E6 /* CoreNfcSessionCoordinator.swift */,
+				343BE8463BEA7AED36197DD6 /* IOSSpeechAnnouncer.swift */,
+				8D249CF049795F7D9182C100 /* MainScreenView.swift */,
+				06B5EB8147939EADFA318232 /* ReadStickerIntent.swift */,
+				BB210E5BAB8132C24E1E78BB /* TagSpeakApp.swift */,
+			);
+			path = TagSpeakApp;
+			sourceTree = "<group>";
+		};
+		AEB9A484B6A160DF5D13C7A9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CA92CCF81BB3B09CB233B9F4 /* AppIntents.framework */,
+				846AF689C4507331FE08736D /* AVFoundation.framework */,
+				32A1DAD3A7F2AE511F926B5E /* CoreNFC.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CCF1A3A84A97781CC412F2AB /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				8D98A42725785EC223CAE45F /* ios */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		E416B4A194B0770F8A8A22F3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A6F8E36FB300B1938B1DB4AC /* TagSpeak.app */,
+				8CDD9B4C8BDC29A71B35DC78 /* TagSpeakTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5B8FF15D6E7B79B07B2763E9 /* TagSpeak */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A3FC4922839293C0825FF111 /* Build configuration list for PBXNativeTarget "TagSpeak" */;
+			buildPhases = (
+				B21AC99616B83F48A3693AD1 /* Sources */,
+				3E1A98FBAC5FC53ED6185CEB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TagSpeak;
+			packageProductDependencies = (
+				8E4892EC7CBBF265D35C7AC8 /* TagSpeakCore */,
+			);
+			productName = TagSpeak;
+			productReference = A6F8E36FB300B1938B1DB4AC /* TagSpeak.app */;
+			productType = "com.apple.product-type.application";
+		};
+		981637E221A3DE0267FAFAC1 /* TagSpeakTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CFF9B9539767920363CEFCE /* Build configuration list for PBXNativeTarget "TagSpeakTests" */;
+			buildPhases = (
+				F76B2A962C85FC38BC75764C /* Sources */,
+				0D8BCD077CF2B3B75D533ECC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				417E97BFE31CCD7CB1D7694E /* PBXTargetDependency */,
+			);
+			name = TagSpeakTests;
+			packageProductDependencies = (
+				898193FC97FA24410F4DF7DE /* TagSpeakCore */,
+			);
+			productName = TagSpeakTests;
+			productReference = 8CDD9B4C8BDC29A71B35DC78 /* TagSpeakTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1F444297539DD6FF2F5ADCCF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 7DB467EAD18FE677FC1DAF97 /* Build configuration list for PBXProject "TagSpeak" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2DB67AEFED38F3D69B727611;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2BED364E73B00FAE05C846B6 /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E416B4A194B0770F8A8A22F3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5B8FF15D6E7B79B07B2763E9 /* TagSpeak */,
+				981637E221A3DE0267FAFAC1 /* TagSpeakTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B21AC99616B83F48A3693AD1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75CFE733C0219E6B029A389D /* CoreNfcSessionCoordinator.swift in Sources */,
+				8D01472876F359AB020C64A1 /* IOSSpeechAnnouncer.swift in Sources */,
+				3B720F42ACA56082E7325D49 /* MainScreenView.swift in Sources */,
+				32CDCA1F08EF65CDB41EB488 /* ReadStickerIntent.swift in Sources */,
+				574226B969EADF47F87945B8 /* TagSpeakApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F76B2A962C85FC38BC75764C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC08890AD5B1A8D35E309684 /* CLITestHarness.swift in Sources */,
+				22FD68EADA29CF5790053654 /* MainScreenViewModelTests.swift in Sources */,
+				35F10709D70D09DF86662292 /* TagSpeakNdefCodecTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		417E97BFE31CCD7CB1D7694E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5B8FF15D6E7B79B07B2763E9 /* TagSpeak */;
+			targetProxy = BD248AC9A7D0608FCD86DAED /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		205B5099A51944D47C67446F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TagSpeakApp/TagSpeak.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = TagSpeakApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tagspeak.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		2F29D98BECFC81FA5201CADF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tagspeak.TagSpeakTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TagSpeak.app/TagSpeak";
+			};
+			name = Release;
+		};
+		650EACEEF7E4AB21B8D75A6B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tagspeak.TagSpeakTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TagSpeak.app/TagSpeak";
+			};
+			name = Debug;
+		};
+		80B20387C188122DE22E3F96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = TagSpeakApp/TagSpeak.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = TagSpeakApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tagspeak.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9D85AE4D62BE30D8813FC6C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B9FFCAABA9688B952EF113F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0CFF9B9539767920363CEFCE /* Build configuration list for PBXNativeTarget "TagSpeakTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				650EACEEF7E4AB21B8D75A6B /* Debug */,
+				2F29D98BECFC81FA5201CADF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7DB467EAD18FE677FC1DAF97 /* Build configuration list for PBXProject "TagSpeak" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D85AE4D62BE30D8813FC6C5 /* Debug */,
+				B9FFCAABA9688B952EF113F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A3FC4922839293C0825FF111 /* Build configuration list for PBXNativeTarget "TagSpeak" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				80B20387C188122DE22E3F96 /* Debug */,
+				205B5099A51944D47C67446F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		2BED364E73B00FAE05C846B6 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		898193FC97FA24410F4DF7DE /* TagSpeakCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TagSpeakCore;
+		};
+		8E4892EC7CBBF265D35C7AC8 /* TagSpeakCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TagSpeakCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1F444297539DD6FF2F5ADCCF /* Project object */;
+}

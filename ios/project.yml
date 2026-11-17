@@ -22,8 +22,25 @@ targets:
           - "TagSpeak.entitlements"
     info:
       path: TagSpeakApp/Info.plist
+      properties:
+        CFBundleDisplayName: TagSpeak
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        LSRequiresIPhoneOS: true
+        NFCReaderUsageDescription: "TagSpeak scans NFC stickers to read spoken labels aloud and to write new spoken labels onto stickers."
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     entitlements:
       path: TagSpeakApp/TagSpeak.entitlements
+      properties:
+        com.apple.developer.nfc.readersession.formats:
+          - NDEF
+          - TAG
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tagspeak.app
