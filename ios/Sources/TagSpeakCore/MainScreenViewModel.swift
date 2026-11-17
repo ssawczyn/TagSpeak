@@ -58,6 +58,7 @@ public struct TagSpeakUiState: Sendable, Equatable {
   public var settings: TagSpeakSettings = TagSpeakSettings()
   public var lastTriggerButton: NfcTriggerButton? = nil
   public var focusRestoreGeneration: Int = 0
+  public var focusRestoreDelaySeconds: Double = 1.9
 
   public init(
     selectedTab: TagSpeakTab = .write,
@@ -70,7 +71,8 @@ public struct TagSpeakUiState: Sendable, Equatable {
       "Ready. Enter a label to write, or activate Read Sticker Aloud to scan a TagSpeak sticker.",
     settings: TagSpeakSettings = TagSpeakSettings(),
     lastTriggerButton: NfcTriggerButton? = nil,
-    focusRestoreGeneration: Int = 0
+    focusRestoreGeneration: Int = 0,
+    focusRestoreDelaySeconds: Double = 1.9
   ) {
     self.selectedTab = selectedTab
     self.draftLabelText = draftLabelText
@@ -82,6 +84,7 @@ public struct TagSpeakUiState: Sendable, Equatable {
     self.settings = settings
     self.lastTriggerButton = lastTriggerButton
     self.focusRestoreGeneration = focusRestoreGeneration
+    self.focusRestoreDelaySeconds = focusRestoreDelaySeconds
   }
 
   public var draftTextUtf8Bytes: Int {
@@ -154,11 +157,21 @@ public final class MainScreenViewModel: ObservableObject {
     nfcSessionDriver?.beginReadSession(alertMessage: alertMsg)
   }
 
-  /// Invoked when the iOS system CoreNFC sheet is dismissed/invalidated so VoiceOver focus returns to the launching button.
+  /// Invoked when the iOS system CoreNFC sheet is cancelled/invalidated without completing a tag read/write.
   public func onNfcSessionDismissed() {
     if uiState.nfcMode == .armedToWrite || uiState.nfcMode == .armedToLoadForEdit {
       uiState.nfcMode = .readAndInspect
     }
+    uiState.focusRestoreDelaySeconds = 0.65
+    uiState.focusRestoreGeneration += 1
+  }
+
+  /// Computes a safe delay (in seconds) before restoring VoiceOver focus to the launching button:
+  /// - Always waits at least 1.95s so Apple's CoreNFC checkmark modal sheet has completely dismissed.
+  /// - Scales up for longer spoken labels so restoring focus to the button never cuts off the spoken label.
+  private func scheduleFocusRestore(afterSpeaking spokenText: String) {
+    let estimatedSpeechSeconds = 0.7 + (Double(spokenText.count) * 0.065)
+    uiState.focusRestoreDelaySeconds = min(max(1.95, estimatedSpeechSeconds), 6.5)
     uiState.focusRestoreGeneration += 1
   }
 
@@ -311,7 +324,7 @@ public final class MainScreenViewModel: ObservableObject {
         let message = "This sticker does not contain an existing text label to edit."
         uiState.nfcMode = .readAndInspect
         uiState.statusAnnouncement = message
-        uiState.focusRestoreGeneration += 1
+        scheduleFocusRestore(afterSpeaking: message)
         speakAloud(message)
       } else {
         let message =
@@ -323,7 +336,7 @@ public final class MainScreenViewModel: ObservableObject {
         uiState.overwriteConfirmedForNextTap = true
         uiState.pendingOverwritePrompt = nil
         uiState.statusAnnouncement = message
-        uiState.focusRestoreGeneration += 1
+        scheduleFocusRestore(afterSpeaking: message)
         speakAloud(message)
       }
 
@@ -336,13 +349,13 @@ public final class MainScreenViewModel: ObservableObject {
         }
         uiState.lastScannedLabel = parsedLabel
         uiState.statusAnnouncement = "Sticker label: \"\(cleanText)\""
-        uiState.focusRestoreGeneration += 1
+        scheduleFocusRestore(afterSpeaking: cleanText)
         speakAloud(cleanText)
       } else {
         let msg =
           "Blank or unformatted NFC sticker detected. Switch to Write Label to record a label."
         uiState.statusAnnouncement = msg
-        uiState.focusRestoreGeneration += 1
+        scheduleFocusRestore(afterSpeaking: msg)
         speakAloud(msg)
       }
     }
@@ -392,7 +405,6 @@ public final class MainScreenViewModel: ObservableObject {
   }
 
   public func handleWriteOutcome(_ outcome: TagWriteOutcome) {
-    uiState.focusRestoreGeneration += 1
     switch outcome {
     case .success(let writtenLabel, _, let bytesWritten, let maxCapacityBytes):
       let updatedScanned = ParsedTagSpeakLabel(
@@ -408,6 +420,7 @@ public final class MainScreenViewModel: ObservableObject {
       uiState.pendingOverwritePrompt = nil
       uiState.lastScannedLabel = updatedScanned
       uiState.statusAnnouncement = announcement
+      scheduleFocusRestore(afterSpeaking: uiState.settings.speakAfterWrite ? announcement : "")
       if uiState.settings.speakAfterWrite {
         speakAloud(announcement)
       }
@@ -421,6 +434,7 @@ public final class MainScreenViewModel: ObservableObject {
         newLabel: pendingNewLabel
       )
       uiState.statusAnnouncement = warningMessage
+      scheduleFocusRestore(afterSpeaking: warningMessage)
       speakAloud(warningMessage)
 
     case .failure(let reason, let details):
@@ -440,6 +454,7 @@ public final class MainScreenViewModel: ObservableObject {
           "Write failed: Sticker moved away too quickly. Hold your iPhone steady against the sticker and try again."
       }
       uiState.statusAnnouncement = errorMessage
+      scheduleFocusRestore(afterSpeaking: errorMessage)
       speakAloud(errorMessage)
     }
   }

@@ -68,8 +68,9 @@ public struct MainScreenView: View {
       #endif
       .onChange(of: viewModel.uiState.focusRestoreGeneration) { _, _ in
         guard let targetButton = viewModel.uiState.lastTriggerButton else { return }
+        let delay = viewModel.uiState.focusRestoreDelaySeconds
         focusedNfcButton = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
           focusedNfcButton = targetButton
         }
       }
