@@ -11,6 +11,7 @@
 		32CDCA1F08EF65CDB41EB488 /* ReadStickerIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06B5EB8147939EADFA318232 /* ReadStickerIntent.swift */; };
 		35F10709D70D09DF86662292 /* TagSpeakNdefCodecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2604E1194D249FB44783AE /* TagSpeakNdefCodecTests.swift */; };
 		3B720F42ACA56082E7325D49 /* MainScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D249CF049795F7D9182C100 /* MainScreenView.swift */; };
+		42A468B9C20F739EF3E5A62C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6968D113B19FE3836F067326 /* Assets.xcassets */; };
 		574226B969EADF47F87945B8 /* TagSpeakApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB210E5BAB8132C24E1E78BB /* TagSpeakApp.swift */; };
 		75CFE733C0219E6B029A389D /* CoreNfcSessionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B82EEB5A41C87A13BBC371E6 /* CoreNfcSessionCoordinator.swift */; };
 		7BEAC72C6F016C32ADDC78FA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 846AF689C4507331FE08736D /* AVFoundation.framework */; };
@@ -36,6 +37,7 @@
 		06B5EB8147939EADFA318232 /* ReadStickerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadStickerIntent.swift; sourceTree = "<group>"; };
 		32A1DAD3A7F2AE511F926B5E /* CoreNFC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreNFC.framework; path = System/Library/Frameworks/CoreNFC.framework; sourceTree = SDKROOT; };
 		343BE8463BEA7AED36197DD6 /* IOSSpeechAnnouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSSpeechAnnouncer.swift; sourceTree = "<group>"; };
+		6968D113B19FE3836F067326 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8264C0AEC680944C3179091A /* MainScreenViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenViewModelTests.swift; sourceTree = "<group>"; };
 		846AF689C4507331FE08736D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		8CDD9B4C8BDC29A71B35DC78 /* TagSpeakTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TagSpeakTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +99,7 @@
 		9B415E9111D3A5B6C17C44DC /* TagSpeakApp */ = {
 			isa = PBXGroup;
 			children = (
+				6968D113B19FE3836F067326 /* Assets.xcassets */,
 				B82EEB5A41C87A13BBC371E6 /* CoreNfcSessionCoordinator.swift */,
 				343BE8463BEA7AED36197DD6 /* IOSSpeechAnnouncer.swift */,
 				8D249CF049795F7D9182C100 /* MainScreenView.swift */,
@@ -141,6 +144,7 @@
 			buildConfigurationList = A3FC4922839293C0825FF111 /* Build configuration list for PBXNativeTarget "TagSpeak" */;
 			buildPhases = (
 				B21AC99616B83F48A3693AD1 /* Sources */,
+				90FC1C23E0C0DE55FD49E344 /* Resources */,
 				3E1A98FBAC5FC53ED6185CEB /* Frameworks */,
 			);
 			buildRules = (
@@ -212,6 +216,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		90FC1C23E0C0DE55FD49E344 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42A468B9C20F739EF3E5A62C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B21AC99616B83F48A3693AD1 /* Sources */ = {
