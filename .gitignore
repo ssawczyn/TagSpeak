@@ -16,3 +16,13 @@ app/build/
 keystore.properties
 /play-store-assets/
 
+# iOS / Swift / Xcode build artifacts
+ios/.build/
+ios/.swiftpm/
+ios/DerivedData/
+ios/build/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+
