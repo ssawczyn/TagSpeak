@@ -106,6 +106,9 @@ extension CoreNfcSessionCoordinator: @preconcurrency NFCNDEFReaderSessionDelegat
 
   public func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
     activeSession = nil
+    Task { @MainActor in
+      self.viewModel?.onNfcSessionDismissed()
+    }
   }
 
   public func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {

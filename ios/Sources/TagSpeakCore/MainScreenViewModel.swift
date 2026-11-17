@@ -7,6 +7,15 @@ public enum TagSpeakTab: String, Sendable, Equatable, CaseIterable {
   case settings
 }
 
+/// Identifies which button launched the iOS CoreNFC scanning sheet so VoiceOver focus
+/// can be deterministically restored to that exact button when the sheet dismisses.
+public enum NfcTriggerButton: String, Sendable, Equatable, Hashable {
+  case writeTabReadButton
+  case writeTabWriteButton
+  case writeTabScanToEditButton
+  case inspectTabScanButton
+}
+
 public enum NfcOperationMode: Sendable, Equatable {
   /// Default mode: scanning a sticker reads, announces, and inspects it.
   case readAndInspect
@@ -47,6 +56,8 @@ public struct TagSpeakUiState: Sendable, Equatable {
   public var statusAnnouncement: String =
     "Ready. Enter a label to write, or activate Read Sticker Aloud to scan a TagSpeak sticker."
   public var settings: TagSpeakSettings = TagSpeakSettings()
+  public var lastTriggerButton: NfcTriggerButton? = nil
+  public var focusRestoreGeneration: Int = 0
 
   public init(
     selectedTab: TagSpeakTab = .write,
@@ -57,7 +68,9 @@ public struct TagSpeakUiState: Sendable, Equatable {
     lastScannedLabel: ParsedTagSpeakLabel? = nil,
     statusAnnouncement: String =
       "Ready. Enter a label to write, or activate Read Sticker Aloud to scan a TagSpeak sticker.",
-    settings: TagSpeakSettings = TagSpeakSettings()
+    settings: TagSpeakSettings = TagSpeakSettings(),
+    lastTriggerButton: NfcTriggerButton? = nil,
+    focusRestoreGeneration: Int = 0
   ) {
     self.selectedTab = selectedTab
     self.draftLabelText = draftLabelText
@@ -67,6 +80,8 @@ public struct TagSpeakUiState: Sendable, Equatable {
     self.lastScannedLabel = lastScannedLabel
     self.statusAnnouncement = statusAnnouncement
     self.settings = settings
+    self.lastTriggerButton = lastTriggerButton
+    self.focusRestoreGeneration = focusRestoreGeneration
   }
 
   public var draftTextUtf8Bytes: Int {
@@ -130,18 +145,29 @@ public final class MainScreenViewModel: ObservableObject {
   }
 
   /// Starts an immediate iOS CoreNFC read session (triggered from the UI button, Action Button AppIntent, or auto-scan on launch).
-  public func startReadStickerScan() {
+  public func startReadStickerScan(triggeredFrom button: NfcTriggerButton = .writeTabReadButton) {
     uiState.nfcMode = .readAndInspect
     uiState.pendingOverwritePrompt = nil
+    uiState.lastTriggerButton = button
     let alertMsg = "Hold the top of your iPhone near a TagSpeak NFC sticker to read its label."
     uiState.statusAnnouncement = alertMsg
     nfcSessionDriver?.beginReadSession(alertMessage: alertMsg)
   }
 
+  /// Invoked when the iOS system CoreNFC sheet is dismissed/invalidated so VoiceOver focus returns to the launching button.
+  public func onNfcSessionDismissed() {
+    if uiState.nfcMode == .armedToWrite || uiState.nfcMode == .armedToLoadForEdit {
+      uiState.nfcMode = .readAndInspect
+    }
+    uiState.focusRestoreGeneration += 1
+  }
+
   /// Invoked when the app enters the foreground if `autoScanOnLaunch` is enabled.
   public func handleAppDidBecomeActive(isTriggeredByShortcut: Bool = false) {
     if isTriggeredByShortcut || uiState.settings.autoScanOnLaunch {
-      startReadStickerScan()
+      let targetButton: NfcTriggerButton =
+        (uiState.selectedTab == .inspect) ? .inspectTabScanButton : .writeTabReadButton
+      startReadStickerScan(triggeredFrom: targetButton)
     }
   }
 
@@ -165,6 +191,7 @@ public final class MainScreenViewModel: ObservableObject {
       "Ready to write label: \"\(cleanLabel)\". Hold the top of your iPhone near an NFC sticker."
     uiState.selectedTab = .write
     uiState.nfcMode = .armedToWrite
+    uiState.lastTriggerButton = .writeTabWriteButton
     uiState.overwriteConfirmedForNextTap = false
     uiState.pendingOverwritePrompt = nil
     uiState.statusAnnouncement = alertMsg
@@ -181,6 +208,7 @@ public final class MainScreenViewModel: ObservableObject {
         "Scan to edit ready. Hold the top of your iPhone near an existing TagSpeak sticker to load its label into the editor."
       uiState.selectedTab = .write
       uiState.nfcMode = .armedToLoadForEdit
+      uiState.lastTriggerButton = .writeTabScanToEditButton
       uiState.overwriteConfirmedForNextTap = false
       uiState.pendingOverwritePrompt = nil
       uiState.statusAnnouncement = alertMsg
@@ -193,6 +221,7 @@ public final class MainScreenViewModel: ObservableObject {
     let message =
       "Overwrite confirmed. Hold your iPhone near the sticker again to replace \"\(prompt.existingLabel)\" with \"\(prompt.newLabel)\"."
     uiState.nfcMode = .armedToWrite
+    uiState.lastTriggerButton = .writeTabWriteButton
     uiState.overwriteConfirmedForNextTap = true
     uiState.pendingOverwritePrompt = nil
     uiState.statusAnnouncement = message
@@ -282,6 +311,7 @@ public final class MainScreenViewModel: ObservableObject {
         let message = "This sticker does not contain an existing text label to edit."
         uiState.nfcMode = .readAndInspect
         uiState.statusAnnouncement = message
+        uiState.focusRestoreGeneration += 1
         speakAloud(message)
       } else {
         let message =
@@ -293,20 +323,26 @@ public final class MainScreenViewModel: ObservableObject {
         uiState.overwriteConfirmedForNextTap = true
         uiState.pendingOverwritePrompt = nil
         uiState.statusAnnouncement = message
+        uiState.focusRestoreGeneration += 1
         speakAloud(message)
       }
 
     case .readAndInspect:
       if let parsedLabel, parsedLabel.hasExistingLabel {
         let cleanText = parsedLabel.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        uiState.selectedTab = .inspect
+        // Only switch to the Inspect tab if the scan was not explicitly launched from the Write tab's Read button
+        if uiState.lastTriggerButton != .writeTabReadButton {
+          uiState.selectedTab = .inspect
+        }
         uiState.lastScannedLabel = parsedLabel
         uiState.statusAnnouncement = "Sticker label: \"\(cleanText)\""
+        uiState.focusRestoreGeneration += 1
         speakAloud(cleanText)
       } else {
         let msg =
           "Blank or unformatted NFC sticker detected. Switch to Write Label to record a label."
         uiState.statusAnnouncement = msg
+        uiState.focusRestoreGeneration += 1
         speakAloud(msg)
       }
     }
@@ -356,6 +392,7 @@ public final class MainScreenViewModel: ObservableObject {
   }
 
   public func handleWriteOutcome(_ outcome: TagWriteOutcome) {
+    uiState.focusRestoreGeneration += 1
     switch outcome {
     case .success(let writtenLabel, _, let bytesWritten, let maxCapacityBytes):
       let updatedScanned = ParsedTagSpeakLabel(

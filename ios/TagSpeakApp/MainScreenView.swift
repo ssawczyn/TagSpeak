@@ -9,6 +9,7 @@ import UIKit
 
 public struct MainScreenView: View {
   @ObservedObject var viewModel: MainScreenViewModel
+  @AccessibilityFocusState private var focusedNfcButton: NfcTriggerButton?
 
   public init(viewModel: MainScreenViewModel) {
     self.viewModel = viewModel
@@ -25,7 +26,7 @@ public struct MainScreenView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 16) {
             StatusAnnouncementBanner(statusText: viewModel.uiState.statusAnnouncement)
-            WriteLabelSection(viewModel: viewModel)
+            WriteLabelSection(viewModel: viewModel, focusedNfcButton: $focusedNfcButton)
           }
           .padding(16)
         }
@@ -38,7 +39,7 @@ public struct MainScreenView: View {
         ScrollView {
           VStack(alignment: .leading, spacing: 16) {
             StatusAnnouncementBanner(statusText: viewModel.uiState.statusAnnouncement)
-            InspectStickerSection(viewModel: viewModel)
+            InspectStickerSection(viewModel: viewModel, focusedNfcButton: $focusedNfcButton)
           }
           .padding(16)
         }
@@ -65,6 +66,13 @@ public struct MainScreenView: View {
       #if os(iOS)
       .navigationBarTitleDisplayMode(.inline)
       #endif
+      .onChange(of: viewModel.uiState.focusRestoreGeneration) { _, _ in
+        guard let targetButton = viewModel.uiState.lastTriggerButton else { return }
+        focusedNfcButton = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+          focusedNfcButton = targetButton
+        }
+      }
     }
   }
 }
@@ -98,6 +106,7 @@ private struct StatusAnnouncementBanner: View {
 
 private struct WriteLabelSection: View {
   @ObservedObject var viewModel: MainScreenViewModel
+  var focusedNfcButton: AccessibilityFocusState<NfcTriggerButton?>.Binding
 
   var body: some View {
     let state = viewModel.uiState
@@ -107,7 +116,7 @@ private struct WriteLabelSection: View {
     VStack(alignment: .leading, spacing: 16) {
       // Quick Read Action at top so iOS users can always trigger a read scan with one tap
       Button {
-        viewModel.startReadStickerScan()
+        viewModel.startReadStickerScan(triggeredFrom: .writeTabReadButton)
       } label: {
         Label("Read Sticker Aloud", systemImage: "wave.3.right.circle.fill")
           .font(.headline)
@@ -116,6 +125,7 @@ private struct WriteLabelSection: View {
       }
       .buttonStyle(.borderedProminent)
       .tint(.accentColor)
+      .accessibilityFocused(focusedNfcButton, equals: .writeTabReadButton)
       .accessibilityHint("Opens the NFC scanner to read and speak any TagSpeak sticker aloud.")
       .accessibilityIdentifier("read_sticker_button")
 
@@ -182,6 +192,7 @@ private struct WriteLabelSection: View {
       }
       .buttonStyle(.borderedProminent)
       .disabled(!(isArmedToWrite || state.canArmWrite))
+      .accessibilityFocused(focusedNfcButton, equals: .writeTabWriteButton)
       .accessibilityValue(
         isArmedToWrite ? "Waiting for NFC sticker tap" : "Not currently writing"
       )
@@ -200,6 +211,7 @@ private struct WriteLabelSection: View {
         .padding(.vertical, 6)
       }
       .buttonStyle(.bordered)
+      .accessibilityFocused(focusedNfcButton, equals: .writeTabScanToEditButton)
       .accessibilityValue(
         isArmedScanToEdit ? "Waiting to scan existing sticker into editor" : "Inactive"
       )
@@ -267,6 +279,7 @@ private struct OverwriteConfirmationCard: View {
 
 private struct InspectStickerSection: View {
   @ObservedObject var viewModel: MainScreenViewModel
+  var focusedNfcButton: AccessibilityFocusState<NfcTriggerButton?>.Binding
 
   var body: some View {
     let state = viewModel.uiState
@@ -277,7 +290,7 @@ private struct InspectStickerSection: View {
         .accessibilityAddTraits(.isHeader)
 
       Button {
-        viewModel.startReadStickerScan()
+        viewModel.startReadStickerScan(triggeredFrom: .inspectTabScanButton)
       } label: {
         Label("Scan Sticker Now", systemImage: "wave.3.right.circle.fill")
           .font(.headline)
@@ -285,6 +298,7 @@ private struct InspectStickerSection: View {
           .padding(.vertical, 8)
       }
       .buttonStyle(.borderedProminent)
+      .accessibilityFocused(focusedNfcButton, equals: .inspectTabScanButton)
       .accessibilityIdentifier("inspect_scan_button")
 
       if let scanned = state.lastScannedLabel {

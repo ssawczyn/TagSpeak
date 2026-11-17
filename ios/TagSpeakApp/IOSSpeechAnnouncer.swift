@@ -53,9 +53,9 @@ public final class IOSSpeechAnnouncer: NSObject, SpeechSpeaker, @unchecked Senda
     #if os(iOS)
     if UIAccessibility.isVoiceOverRunning {
       // When VoiceOver is active, route speech directly through VoiceOver's announcement
-      // channel (after a brief 450ms delay so the CoreNFC system sheet finishes dismissing)
-      // rather than speaking over VoiceOver with a second AVSpeechSynthesizer voice.
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+      // channel after the CoreNFC system sheet dismisses and @AccessibilityFocusState
+      // has returned focus to the button that launched the scan (~550ms).
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
         UIAccessibility.post(notification: .announcement, argument: cleanText)
         onComplete?()
       }
