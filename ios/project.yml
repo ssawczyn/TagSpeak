@@ -40,7 +40,6 @@ targets:
       path: TagSpeakApp/TagSpeak.entitlements
       properties:
         com.apple.developer.nfc.readersession.formats:
-          - NDEF
           - TAG
     settings:
       base:
