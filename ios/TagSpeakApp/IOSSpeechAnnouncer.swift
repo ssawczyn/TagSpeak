@@ -50,15 +50,20 @@ public final class IOSSpeechAnnouncer: NSObject, SpeechSpeaker, @unchecked Senda
       return
     }
 
-    // Wait briefly (350ms) if a system modal/CoreNFC sheet is dismissing so VoiceOver's
-    // screen-change announcement does not step on the spoken sticker label.
     #if os(iOS)
-    let delaySeconds: TimeInterval = UIAccessibility.isVoiceOverRunning ? 0.35 : 0.0
-    #else
-    let delaySeconds: TimeInterval = 0.0
+    if UIAccessibility.isVoiceOverRunning {
+      // When VoiceOver is active, route speech directly through VoiceOver's announcement
+      // channel (after a brief 450ms delay so the CoreNFC system sheet finishes dismissing)
+      // rather than speaking over VoiceOver with a second AVSpeechSynthesizer voice.
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+        UIAccessibility.post(notification: .announcement, argument: cleanText)
+        onComplete?()
+      }
+      return
+    }
     #endif
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + delaySeconds) { [weak self] in
+    DispatchQueue.main.async { [weak self] in
       self?.speakImmediately(text: cleanText, speechRate: speechRate, onComplete: onComplete)
     }
   }

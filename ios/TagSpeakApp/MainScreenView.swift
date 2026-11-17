@@ -65,17 +65,7 @@ public struct MainScreenView: View {
       #if os(iOS)
       .navigationBarTitleDisplayMode(.inline)
       #endif
-      .onChange(of: viewModel.uiState.statusAnnouncement) { _, newAnnouncement in
-        postVoiceOverAnnouncement(newAnnouncement)
-      }
     }
-  }
-
-  private func postVoiceOverAnnouncement(_ message: String) {
-    #if os(iOS)
-    guard UIAccessibility.isVoiceOverRunning else { return }
-    UIAccessibility.post(notification: .announcement, argument: message)
-    #endif
   }
 }
 
