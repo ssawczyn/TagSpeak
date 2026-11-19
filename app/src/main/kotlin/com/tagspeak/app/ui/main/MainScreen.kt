@@ -13,6 +13,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -28,11 +29,16 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -239,59 +245,68 @@ private fun WriteLabelSection(
     modifier = Modifier.semantics { heading() },
   )
 
-  // Overwrite confirmation prompt if an existing sticker label was detected
+  val armWriteButtonFocusRequester = remember { FocusRequester() }
+  val confirmButtonFocusRequester = remember { FocusRequester() }
+
+  // Overwrite confirmation modal dialog when an existing sticker label is detected
   val prompt = state.pendingOverwritePrompt
   if (prompt != null) {
-    Card(
-      modifier =
-        Modifier.fillMaxWidth()
-          .testTag("overwrite_confirmation_card")
-          .semantics { liveRegion = LiveRegionMode.Assertive },
-      colors =
-        CardDefaults.cardColors(
-          containerColor = MaterialTheme.colorScheme.errorContainer,
-          contentColor = MaterialTheme.colorScheme.onErrorContainer,
-        ),
-    ) {
-      Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-      ) {
+    LaunchedEffect(prompt) {
+      // Direct accessibility/keyboard focus to the Confirm Overwrite button immediately
+      confirmButtonFocusRequester.requestFocus()
+    }
+
+    AlertDialog(
+      onDismissRequest = {
+        onCancelOverwrite()
+        armWriteButtonFocusRequester.requestFocus()
+      },
+      title = {
         Text(
           text = stringResource(R.string.overwrite_warning_title),
           style = MaterialTheme.typography.titleMedium,
           fontWeight = FontWeight.Bold,
-          modifier = Modifier.semantics { heading() },
+          modifier = Modifier.semantics { heading() }
         )
+      },
+      text = {
         Text(
-          text =
-            "This sticker currently says: \"${prompt.existingLabel}\". Do you want to replace it with \"${prompt.newLabel}\"?",
-          style = MaterialTheme.typography.bodyLarge,
+          text = "This sticker currently says: \"${prompt.existingLabel}\". Do you want to replace it with \"${prompt.newLabel}\"?",
+          style = MaterialTheme.typography.bodyLarge
         )
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.spacedBy(12.dp),
+      },
+      confirmButton = {
+        Button(
+          onClick = {
+            onConfirmOverwrite()
+            armWriteButtonFocusRequester.requestFocus()
+          },
+          colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = MaterialTheme.colorScheme.onError
+          ),
+          modifier = Modifier
+            .testTag("confirm_overwrite_button")
+            .focusRequester(confirmButtonFocusRequester)
         ) {
-          Button(
-            onClick = onConfirmOverwrite,
-            modifier = Modifier.weight(1f).testTag("confirm_overwrite_button"),
-            colors =
-              ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError,
-              ),
-          ) {
-            Text(stringResource(R.string.confirm_overwrite_button))
-          }
-          OutlinedButton(
-            onClick = onCancelOverwrite,
-            modifier = Modifier.weight(1f).testTag("cancel_overwrite_button"),
-          ) {
-            Text(stringResource(R.string.cancel_overwrite_button))
-          }
+          Text(stringResource(R.string.confirm_overwrite_button))
         }
-      }
-    }
+      },
+      dismissButton = {
+        OutlinedButton(
+          onClick = {
+            onCancelOverwrite()
+            armWriteButtonFocusRequester.requestFocus()
+          },
+          modifier = Modifier.testTag("cancel_overwrite_button")
+        ) {
+          Text(stringResource(R.string.cancel_overwrite_button))
+        }
+      },
+      modifier = Modifier
+        .testTag("overwrite_confirmation_dialog")
+        .testTag("overwrite_confirmation_card")
+    )
   }
 
   OutlinedTextField(
@@ -335,6 +350,7 @@ private fun WriteLabelSection(
     modifier =
       Modifier.fillMaxWidth()
         .testTag("arm_write_button")
+        .focusRequester(armWriteButtonFocusRequester)
         .semantics {
           stateDescription =
             if (isArmedToWrite) {

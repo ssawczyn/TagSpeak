@@ -24,8 +24,8 @@ targets:
       path: TagSpeakApp/Info.plist
       properties:
         CFBundleDisplayName: TagSpeak
-        CFBundleShortVersionString: "1.0.0"
-        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0.1"
+        CFBundleVersion: "2"
         ITSAppUsesNonExemptEncryption: false
         LSRequiresIPhoneOS: true
         NFCReaderUsageDescription: "TagSpeak scans NFC stickers to read spoken labels aloud and to write new spoken labels onto stickers."

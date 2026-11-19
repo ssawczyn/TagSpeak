@@ -66,6 +66,26 @@ public struct MainScreenView: View {
       #if os(iOS)
       .navigationBarTitleDisplayMode(.inline)
       #endif
+      .alert(
+        "Sticker Already Has a Label",
+        isPresented: Binding(
+          get: { viewModel.uiState.pendingOverwritePrompt != nil },
+          set: { if !$0 { viewModel.cancelOverwritePrompt() } }
+        ),
+        presenting: viewModel.uiState.pendingOverwritePrompt
+      ) { prompt in
+        Button("Confirm Overwrite", role: .destructive) {
+          viewModel.confirmOverwriteAndArmWrite()
+        }
+        .accessibilityIdentifier("confirm_overwrite_button")
+
+        Button("Cancel", role: .cancel) {
+          viewModel.cancelOverwritePrompt()
+        }
+        .accessibilityIdentifier("cancel_overwrite_button")
+      } message: { prompt in
+        Text("This sticker currently says: \"\(prompt.existingLabel)\". Do you want to replace it with \"\(prompt.newLabel)\"?")
+      }
       .onChange(of: viewModel.uiState.focusRestoreGeneration) { _, _ in
         guard let targetButton = viewModel.uiState.lastTriggerButton else { return }
         let delay = viewModel.uiState.focusRestoreDelaySeconds
@@ -136,14 +156,6 @@ private struct WriteLabelSection: View {
       Text("Write a Spoken Sticker Label")
         .font(.title3.weight(.bold))
         .accessibilityAddTraits(.isHeader)
-
-      if let prompt = state.pendingOverwritePrompt {
-        OverwriteConfirmationCard(
-          prompt: prompt,
-          onConfirm: { viewModel.confirmOverwriteAndArmWrite() },
-          onCancel: { viewModel.cancelOverwritePrompt() }
-        )
-      }
 
       VStack(alignment: .leading, spacing: 8) {
         Text("Spoken label text (up to \(state.maxRecommendedTextBytes) characters)")
@@ -254,49 +266,6 @@ private struct WriteLabelSection: View {
         .accessibilityIdentifier("clear_label_button")
       }
     }
-  }
-}
-
-private struct OverwriteConfirmationCard: View {
-  let prompt: PendingOverwritePrompt
-  let onConfirm: () -> Void
-  let onCancel: () -> Void
-
-  var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Sticker Already Has a Label")
-        .font(.headline)
-        .foregroundStyle(.red)
-        .accessibilityAddTraits(.isHeader)
-
-      Text(
-        "This sticker currently says: \"\(prompt.existingLabel)\". Do you want to replace it with \"\(prompt.newLabel)\"?"
-      )
-      .font(.body)
-
-      HStack(spacing: 12) {
-        Button(role: .destructive, action: onConfirm) {
-          Text("Confirm Overwrite")
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(.red)
-        .accessibilityIdentifier("confirm_overwrite_button")
-
-        Button(action: onCancel) {
-          Text("Cancel")
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.bordered)
-        .accessibilityIdentifier("cancel_overwrite_button")
-      }
-    }
-    .padding(16)
-    .background(
-      RoundedRectangle(cornerRadius: 12)
-        .fill(Color.red.opacity(0.12))
-    )
-    .accessibilityIdentifier("overwrite_confirmation_card")
   }
 }
 
