@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tagspeak.app.R
+import com.tagspeak.app.data.StickerTypeProfile
+import com.tagspeak.app.nfc.TagSpeakNdefCodec
 import com.tagspeak.app.ui.theme.TagSpeakTheme
 
 @Composable
@@ -71,6 +73,7 @@ fun MainScreen(
     onSetConfirmBeforeOverwrite = viewModel::setConfirmBeforeOverwrite,
     onSetSpeakAfterWrite = viewModel::setSpeakAfterWrite,
     onSetSpeechRate = viewModel::setSpeechRate,
+    onSetDefaultStickerType = viewModel::setDefaultStickerType,
     onTestSpeechOutput = viewModel::testSpeechOutput,
     modifier = modifier,
   )
@@ -92,6 +95,7 @@ fun MainScreenContent(
   onSetConfirmBeforeOverwrite: (Boolean) -> Unit,
   onSetSpeakAfterWrite: (Boolean) -> Unit,
   onSetSpeechRate: (Float) -> Unit,
+  onSetDefaultStickerType: (StickerTypeProfile) -> Unit = {},
   onTestSpeechOutput: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -171,6 +175,7 @@ fun MainScreenContent(
             onSetConfirmBeforeOverwrite = onSetConfirmBeforeOverwrite,
             onSetSpeakAfterWrite = onSetSpeakAfterWrite,
             onSetSpeechRate = onSetSpeechRate,
+            onSetDefaultStickerType = onSetDefaultStickerType,
             onTestSpeechOutput = onTestSpeechOutput,
           )
       }
@@ -189,8 +194,9 @@ private fun StatusAnnouncementBanner(
         .fillMaxWidth()
         .testTag("status_banner")
         .semantics(mergeDescendants = true) {
+          heading()
           liveRegion = LiveRegionMode.Polite
-          contentDescription = "Status: $statusText"
+          contentDescription = "Current Status: $statusText"
         },
     colors =
       CardDefaults.cardColors(
@@ -223,8 +229,8 @@ private fun WriteLabelSection(
   onConfirmOverwrite: () -> Unit,
   onCancelOverwrite: () -> Unit,
 ) {
-  val capacityAnnouncement =
-    "${state.draftTextUtf8Bytes} of ${state.maxRecommendedTextBytes} bytes used for standard NTAG213 sticker"
+  val capacityAnnouncement = state.capacitySummaryText
+  val stickerProfile = state.settings.defaultStickerType
 
   Text(
     text = stringResource(R.string.write_heading),
@@ -291,14 +297,18 @@ private fun WriteLabelSection(
   OutlinedTextField(
     value = state.draftLabelText,
     onValueChange = onDraftLabelChanged,
-    label = { Text(stringResource(R.string.label_input_title)) },
+    label = {
+      Text(
+        "${stringResource(R.string.label_input_title)} (up to ${state.maxRecommendedTextBytes} characters)"
+      )
+    },
     placeholder = { Text(stringResource(R.string.label_input_placeholder)) },
     isError = state.isDraftOverRecommendedSize,
     supportingText = {
       Text(
         text =
           if (state.isDraftOverRecommendedSize) {
-            "$capacityAnnouncement. Requires a higher-capacity sticker such as NTAG215."
+            "$capacityAnnouncement. Exceeds ${stickerProfile.shortLabel} capacity; use a higher-capacity sticker or shorten the label."
           } else {
             capacityAnnouncement
           }
@@ -309,7 +319,9 @@ private fun WriteLabelSection(
         .testTag("label_text_input")
         .semantics {
           if (state.isDraftOverRecommendedSize) {
-            error("Label exceeds 96 bytes for standard NTAG213 stickers.")
+            error(
+              "Label exceeds ${state.maxRecommendedTextBytes} characters (${state.maxRecommendedTextBytes} bytes) for ${stickerProfile.shortLabel}s."
+            )
           }
         },
     minLines = 3,
@@ -426,9 +438,11 @@ private fun InspectStickerSection(
         )
         val capacitySummary =
           if (scanned.maxCapacityBytes != null) {
-            "NDEF Size: ${scanned.usedBytes} of ${scanned.maxCapacityBytes} bytes used"
+            val maxTextChars =
+              TagSpeakNdefCodec.maxTextBytesForTagCapacity(scanned.maxCapacityBytes)
+            "Sticker Capacity: ${scanned.text.length} of $maxTextChars characters used (${scanned.usedBytes} of ${scanned.maxCapacityBytes} NDEF bytes)"
           } else {
-            "NDEF Size: ${scanned.usedBytes} bytes"
+            "Label Length: ${scanned.text.length} characters (${scanned.usedBytes} NDEF bytes)"
           }
         Text(
           text = capacitySummary,
@@ -471,6 +485,7 @@ private fun SettingsSection(
   onSetConfirmBeforeOverwrite: (Boolean) -> Unit,
   onSetSpeakAfterWrite: (Boolean) -> Unit,
   onSetSpeechRate: (Float) -> Unit,
+  onSetDefaultStickerType: (StickerTypeProfile) -> Unit,
   onTestSpeechOutput: () -> Unit,
 ) {
   Text(
@@ -495,6 +510,50 @@ private fun SettingsSection(
     onCheckedChange = onSetSpeakAfterWrite,
     modifier = Modifier.testTag("switch_speak_after_write"),
   )
+
+  Spacer(modifier = Modifier.height(8.dp))
+
+  Text(
+    text = stringResource(R.string.setting_default_sticker_type_heading),
+    style = MaterialTheme.typography.titleMedium,
+    fontWeight = FontWeight.Bold,
+    modifier = Modifier.semantics { heading() },
+  )
+  Text(
+    text = stringResource(R.string.setting_default_sticker_type_desc),
+    style = MaterialTheme.typography.bodyMedium,
+  )
+
+  Column(
+    modifier = Modifier.fillMaxWidth().selectableGroup(),
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    StickerTypeProfile.entries.forEach { profile ->
+      val isSelected = state.settings.defaultStickerType == profile
+      Row(
+        modifier =
+          Modifier.fillMaxWidth()
+            .testTag("sticker_type_${profile.id}")
+            .selectable(
+              selected = isSelected,
+              role = Role.RadioButton,
+              onClick = { onSetDefaultStickerType(profile) },
+            )
+            .padding(vertical = 8.dp, horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        RadioButton(
+          selected = isSelected,
+          onClick = null,
+        )
+        Text(
+          text = profile.displayName,
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.padding(start = 12.dp),
+        )
+      }
+    }
+  }
 
   Spacer(modifier = Modifier.height(8.dp))
 

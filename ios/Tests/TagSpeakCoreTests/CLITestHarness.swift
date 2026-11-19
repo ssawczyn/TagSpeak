@@ -25,6 +25,17 @@ public func XCTAssertTrue(
   }
 }
 
+public func XCTAssertFalse(
+  _ expression: @autoclosure () -> Bool,
+  _ message: String = "",
+  file: StaticString = #file,
+  line: UInt = #line
+) {
+  if expression() {
+    XCTFail("XCTAssertFalse failed. \(message)", file: file, line: line)
+  }
+}
+
 public func XCTAssertNotNil<T>(
   _ expression: @autoclosure () -> T?,
   _ message: String = "",
@@ -146,6 +157,10 @@ struct CLITestMain {
       (
         "testAutoScanOnLaunch_startsReadSessionWhenEnabledOrTriggeredByShortcut",
         vmTests.testAutoScanOnLaunch_startsReadSessionWhenEnabledOrTriggeredByShortcut
+      ),
+      (
+        "testDefaultStickerTypeAndHardwareCapacity_updatesWarningsAndHonorsActualTagSize",
+        vmTests.testDefaultStickerTypeAndHardwareCapacity_updatesWarningsAndHonorsActualTagSize
       ),
     ]
 

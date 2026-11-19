@@ -1,6 +1,7 @@
 package com.tagspeak.app.ui.main
 
 import com.tagspeak.app.data.InMemoryPreferencesRepository
+import com.tagspeak.app.data.StickerTypeProfile
 import com.tagspeak.app.nfc.ParsedTagSpeakLabel
 import com.tagspeak.app.speech.SpeechSpeaker
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -145,6 +147,49 @@ class MainScreenViewModelTest {
     viewModel.onHardwareTagDiscovered(tag = null, parsedFromIntent = existingSticker)
 
     assertEquals("Vitamin D3 5000 IU", viewModel.uiState.value.lastScannedLabel?.text)
+
+    collectJob.cancel()
+  }
+
+  @Test
+  fun defaultStickerTypeAndHardwareCapacity_updatesWarningsAndHonorsActualTagSize() = runTest {
+    val collectJob = backgroundScope.launch(testDispatcher) { viewModel.uiState.collect() }
+
+    val mediumText = "A".repeat(120)
+    viewModel.updateDraftLabelText(mediumText)
+
+    // Exceeds default NTAG213 (~96 chars)
+    assertTrue(viewModel.uiState.value.isDraftOverRecommendedSize)
+    assertTrue(
+      viewModel.uiState.value.capacitySummaryText.contains(
+        "120 of 96 characters used for standard NTAG213 sticker"
+      )
+    )
+
+    // Switching Default Sticker Type to NTAG215 clears the warning
+    viewModel.setDefaultStickerType(StickerTypeProfile.NTAG215)
+    assertFalse(viewModel.uiState.value.isDraftOverRecommendedSize)
+    assertTrue(
+      viewModel.uiState.value.capacitySummaryText.contains(
+        "120 of 448 characters used for medium NTAG215 sticker"
+      )
+    )
+
+    // Scanning an older low-capacity 56-byte tag during write still fails with accurate hardware capacity message
+    viewModel.setConfirmBeforeOverwrite(false)
+    viewModel.toggleArmWrite()
+    val oldSmallTag =
+      ParsedTagSpeakLabel(
+        text = "",
+        hasTagSpeakAar = false,
+        usedBytes = 0,
+        maxCapacityBytes = 56,
+        isWritable = true,
+      )
+    viewModel.onHardwareTagDiscovered(tag = null, parsedFromIntent = oldSmallTag)
+
+    assertTrue(viewModel.uiState.value.statusAnnouncement.contains("56-byte"))
+    assertTrue(viewModel.uiState.value.statusAnnouncement.contains("15-character"))
 
     collectJob.cancel()
   }

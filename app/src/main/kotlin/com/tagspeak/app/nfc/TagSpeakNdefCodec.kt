@@ -40,15 +40,50 @@ object TagSpeakNdefCodec {
   const val NTAG213_CAPACITY_BYTES = 137
 
   /**
+   * Usable NDEF bytes on a medium-capacity NTAG215 sticker (~504 bytes user memory minus TLV).
+   */
+  const val NTAG215_CAPACITY_BYTES = 492
+
+  /**
+   * Usable NDEF bytes on a large-capacity NTAG216 sticker (~888 bytes user memory minus TLV).
+   */
+  const val NTAG216_CAPACITY_BYTES = 876
+
+  /**
    * Overhead of the NDEF headers + Android Application Record (`com.tagspeak.app`) so we can
    * accurately report remaining UTF-8 text bytes even before a sticker is scanned.
    */
   const val NDEF_AND_AAR_OVERHEAD_BYTES = 41
 
   /**
-   * Default safe UTF-8 text capacity on a standard NTAG213 sticker (~96-100 bytes).
+   * Default safe UTF-8 text capacity on a standard NTAG213 sticker (~96 bytes).
    */
   const val NTAG213_MAX_TEXT_BYTES = NTAG213_CAPACITY_BYTES - NDEF_AND_AAR_OVERHEAD_BYTES
+
+  /**
+   * Safe UTF-8 text capacity on a medium NTAG215 sticker (~448 bytes, subtracting 3 extra bytes for long NDEF record header).
+   */
+  const val NTAG215_MAX_TEXT_BYTES = NTAG215_CAPACITY_BYTES - NDEF_AND_AAR_OVERHEAD_BYTES - 3
+
+  /**
+   * Safe UTF-8 text capacity on a large NTAG216 sticker (~832 bytes, subtracting 3 extra bytes for long NDEF record header).
+   */
+  const val NTAG216_MAX_TEXT_BYTES = NTAG216_CAPACITY_BYTES - NDEF_AND_AAR_OVERHEAD_BYTES - 3
+
+  /**
+   * Computes the maximum UTF-8 text bytes (characters for ASCII text) that can fit inside a tag
+   * with [ndefMaxCapacityBytes] alongside TagSpeak's NDEF headers and Android Application Record.
+   */
+  fun maxTextBytesForTagCapacity(ndefMaxCapacityBytes: Int): Int {
+    if (ndefMaxCapacityBytes <= NDEF_AND_AAR_OVERHEAD_BYTES) return 0
+    val rawAvailable = ndefMaxCapacityBytes - NDEF_AND_AAR_OVERHEAD_BYTES
+    // If payload (1 status + 2 lang + text) >= 256 bytes, NDEF uses a 4-byte length header (+3 bytes)
+    return if (rawAvailable + 3 >= 256) {
+      maxOf(252, rawAvailable - 3)
+    } else {
+      rawAvailable
+    }
+  }
 
   private val AAR_TYPE_BYTES = "android.com:pkg".toByteArray(StandardCharsets.US_ASCII)
 

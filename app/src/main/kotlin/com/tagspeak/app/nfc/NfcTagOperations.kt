@@ -190,9 +190,11 @@ object NfcTagOperations {
 
         val maxSize = ndef.maxSize
         if (messageBytes > maxSize) {
+          val maxTextChars = TagSpeakNdefCodec.maxTextBytesForTagCapacity(maxSize)
           return TagWriteOutcome.Failure(
             reason = WriteFailureReason.LABEL_TOO_LARGE,
-            details = "Label requires $messageBytes bytes, but sticker only holds $maxSize bytes.",
+            details =
+              "Label is ${cleanLabel.length} characters ($messageBytes total NDEF bytes), but this sticker only holds up to $maxTextChars characters ($maxSize total NDEF bytes).",
           )
         }
 

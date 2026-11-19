@@ -98,7 +98,8 @@ private struct StatusAnnouncementBanner: View {
         .fill(Color.secondary.opacity(0.14))
     )
     .accessibilityElement(children: .combine)
-    .accessibilityLabel("Status: \(statusText)")
+    .accessibilityAddTraits(.isHeader)
+    .accessibilityLabel("Current Status: \(statusText)")
     .accessibilityIdentifier("status_banner")
   }
 }
@@ -108,15 +109,17 @@ private struct StatusAnnouncementBanner: View {
 private struct WriteLabelSection: View {
   @ObservedObject var viewModel: MainScreenViewModel
   var focusedNfcButton: AccessibilityFocusState<NfcTriggerButton?>.Binding
+  @FocusState private var isLabelEditorFocused: Bool
 
   var body: some View {
     let state = viewModel.uiState
-    let capacityAnnouncement =
-      "\(state.draftTextUtf8Bytes) of \(state.maxRecommendedTextBytes) bytes used for standard NTAG213 sticker"
+    let capacityAnnouncement = state.capacitySummaryText
+    let stickerProfile = state.settings.defaultStickerType
 
     VStack(alignment: .leading, spacing: 16) {
       // Quick Read Action at top so iOS users can always trigger a read scan with one tap
       Button {
+        isLabelEditorFocused = false
         viewModel.startReadStickerScan(triggeredFrom: .writeTabReadButton)
       } label: {
         Label("Read Sticker Aloud", systemImage: "wave.3.right.circle.fill")
@@ -143,7 +146,7 @@ private struct WriteLabelSection: View {
       }
 
       VStack(alignment: .leading, spacing: 8) {
-        Text("Spoken label text")
+        Text("Spoken label text (up to \(state.maxRecommendedTextBytes) characters)")
           .font(.subheadline.weight(.semibold))
 
         TextEditor(
@@ -152,6 +155,7 @@ private struct WriteLabelSection: View {
             set: { viewModel.updateDraftLabelText($0) }
           )
         )
+        .focused($isLabelEditorFocused)
         .frame(minHeight: 96, maxHeight: 150)
         .padding(8)
         .overlay(
@@ -161,20 +165,37 @@ private struct WriteLabelSection: View {
               lineWidth: 1.5
             )
         )
-        .accessibilityLabel("Spoken label text")
+        .toolbar {
+          ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button("Done") {
+              isLabelEditorFocused = false
+              DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                focusedNfcButton.wrappedValue = .writeTabWriteButton
+              }
+            }
+            .fontWeight(.semibold)
+            .accessibilityLabel("Done editing label")
+            .accessibilityHint("Dismisses the keyboard and moves focus to Write Label to Sticker.")
+            .accessibilityIdentifier("keyboard_done_button")
+          }
+        }
+        .accessibilityLabel(
+          "Spoken label text, up to \(state.maxRecommendedTextBytes) characters recommended for \(stickerProfile.shortLabel)"
+        )
         .accessibilityValue(
           state.draftLabelText.isEmpty ? "Empty" : state.draftLabelText
         )
         .accessibilityHint(
           state.isDraftOverRecommendedSize
-            ? "Warning: Label exceeds 96 bytes for standard NTAG213 stickers. \(capacityAnnouncement)"
+            ? "Warning: Label exceeds \(state.maxRecommendedTextBytes) characters (\(state.maxRecommendedTextBytes) bytes) for \(stickerProfile.shortLabel)s. \(capacityAnnouncement)"
             : capacityAnnouncement
         )
         .accessibilityIdentifier("label_text_input")
 
         Text(
           state.isDraftOverRecommendedSize
-            ? "\(capacityAnnouncement). Requires a higher-capacity sticker such as NTAG215."
+            ? "\(capacityAnnouncement). Exceeds \(stickerProfile.shortLabel) capacity; use a higher-capacity sticker or shorten the label."
             : capacityAnnouncement
         )
         .font(.footnote)
@@ -184,6 +205,7 @@ private struct WriteLabelSection: View {
 
       let isArmedToWrite = (state.nfcMode == .armedToWrite)
       Button {
+        isLabelEditorFocused = false
         viewModel.toggleArmWrite()
       } label: {
         Text(isArmedToWrite ? "Cancel Waiting for Sticker" : "Write Label to Sticker")
@@ -201,6 +223,7 @@ private struct WriteLabelSection: View {
 
       let isArmedScanToEdit = (state.nfcMode == .armedToLoadForEdit)
       Button {
+        isLabelEditorFocused = false
         viewModel.toggleScanToEditMode()
       } label: {
         Text(
@@ -220,6 +243,7 @@ private struct WriteLabelSection: View {
 
       if !state.draftLabelText.isEmpty {
         Button(role: .destructive) {
+          isLabelEditorFocused = false
           viewModel.clearDraftLabel()
         } label: {
           Text("Clear Label Text")
@@ -313,11 +337,11 @@ private struct InspectStickerSection: View {
             .accessibilityAddTraits(.isHeader)
             .accessibilityIdentifier("inspected_label_text")
 
-          let capacitySummary =
+          let capacitySummary: String =
             if let maxCap = scanned.maxCapacityBytes {
-              "NDEF Size: \(scanned.usedBytes) of \(maxCap) bytes used"
+              "Sticker Capacity: \(scanned.text.count) of \(TagSpeakNdefCodec.maxTextBytesForTagCapacity(maxCap)) characters used (\(scanned.usedBytes) of \(maxCap) NDEF bytes)"
             } else {
-              "NDEF Size: \(scanned.usedBytes) bytes"
+              "Label Length: \(scanned.text.count) characters (\(scanned.usedBytes) NDEF bytes)"
             }
           Text(capacitySummary)
             .font(.subheadline)
@@ -422,6 +446,47 @@ private struct SettingsSection: View {
         onToggle: { viewModel.setAutoScanOnLaunch($0) }
       )
       .accessibilityIdentifier("switch_auto_scan_on_launch")
+
+      Text("Default Sticker Type")
+        .font(.headline)
+        .padding(.top, 8)
+        .accessibilityAddTraits(.isHeader)
+
+      Text(
+        "Select the sticker capacity used for character limit warnings on the Write Label screen."
+      )
+      .font(.subheadline)
+      .foregroundStyle(.secondary)
+
+      VStack(alignment: .leading, spacing: 8) {
+        ForEach(StickerTypeProfile.allCases, id: \.rawValue) { profile in
+          let isSelected = (settings.defaultStickerType == profile)
+          Button {
+            viewModel.setDefaultStickerType(profile)
+          } label: {
+            HStack(spacing: 12) {
+              Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
+                .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                .accessibilityHidden(true)
+              Text(profile.displayName)
+                .font(.body)
+                .foregroundStyle(.primary)
+              Spacer()
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(
+              RoundedRectangle(cornerRadius: 8)
+                .fill(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
+            )
+          }
+          .buttonStyle(.plain)
+          .accessibilityElement(children: .combine)
+          .accessibilityLabel(profile.displayName)
+          .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : [.isButton])
+          .accessibilityIdentifier("sticker_type_\(profile.rawValue)")
+        }
+      }
 
       Text("Speech Speed")
         .font(.headline)

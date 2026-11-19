@@ -112,11 +112,36 @@ public enum TagSpeakNdefCodec {
   /// Usable NDEF bytes on a standard NTAG213 sticker (144 bytes user memory minus TLV overhead).
   public static let ntag213CapacityBytes = 137
 
+  /// Usable NDEF bytes on a medium-capacity NTAG215 sticker (~504 bytes user memory minus TLV overhead).
+  public static let ntag215CapacityBytes = 492
+
+  /// Usable NDEF bytes on a large-capacity NTAG216 sticker (~888 bytes user memory minus TLV overhead).
+  public static let ntag216CapacityBytes = 876
+
   /// Overhead of the NDEF headers + Android Application Record (`com.tagspeak.app`).
   public static let ndefAndAarOverheadBytes = 41
 
   /// Default safe UTF-8 text capacity on a standard NTAG213 sticker (96 bytes).
   public static let ntag213MaxTextBytes = ntag213CapacityBytes - ndefAndAarOverheadBytes
+
+  /// Safe UTF-8 text capacity on a medium NTAG215 sticker (448 bytes, subtracting 3 extra bytes for long NDEF record header).
+  public static let ntag215MaxTextBytes = ntag215CapacityBytes - ndefAndAarOverheadBytes - 3
+
+  /// Safe UTF-8 text capacity on a large NTAG216 sticker (832 bytes, subtracting 3 extra bytes for long NDEF record header).
+  public static let ntag216MaxTextBytes = ntag216CapacityBytes - ndefAndAarOverheadBytes - 3
+
+  /// Computes the maximum UTF-8 text bytes (characters for ASCII text) that can fit inside a tag
+  /// with `ndefMaxCapacityBytes` alongside TagSpeak's NDEF headers and Android Application Record.
+  public static func maxTextBytesForTagCapacity(_ ndefMaxCapacityBytes: Int) -> Int {
+    guard ndefMaxCapacityBytes > ndefAndAarOverheadBytes else { return 0 }
+    let rawAvailable = ndefMaxCapacityBytes - ndefAndAarOverheadBytes
+    // If payload (1 status + 2 lang + text) >= 256 bytes, NDEF uses a 4-byte length header (+3 bytes)
+    if rawAvailable + 3 >= 256 {
+      return max(252, rawAvailable - 3)
+    } else {
+      return rawAvailable
+    }
+  }
 
   public static let rtdTextTypeData = Data("T".utf8)
   public static let aarTypeData = Data("android.com:pkg".utf8)

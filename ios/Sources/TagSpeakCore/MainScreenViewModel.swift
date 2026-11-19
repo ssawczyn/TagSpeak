@@ -87,16 +87,31 @@ public struct TagSpeakUiState: Sendable, Equatable {
     self.focusRestoreDelaySeconds = focusRestoreDelaySeconds
   }
 
+  public var draftCharacterCount: Int {
+    draftLabelText.trimmingCharacters(in: .whitespacesAndNewlines).count
+  }
+
   public var draftTextUtf8Bytes: Int {
     draftLabelText.trimmingCharacters(in: .whitespacesAndNewlines).utf8.count
   }
 
   public var maxRecommendedTextBytes: Int {
-    TagSpeakNdefCodec.ntag213MaxTextBytes
+    settings.defaultStickerType.maxRecommendedTextBytes
   }
 
   public var isDraftOverRecommendedSize: Bool {
     draftTextUtf8Bytes > maxRecommendedTextBytes
+  }
+
+  public var capacitySummaryText: String {
+    let profileLabel = settings.defaultStickerType.shortLabel
+    if draftTextUtf8Bytes != draftCharacterCount {
+      return
+        "\(draftCharacterCount) of \(maxRecommendedTextBytes) characters (\(draftTextUtf8Bytes) bytes) used for \(profileLabel)"
+    } else {
+      return
+        "\(draftTextUtf8Bytes) of \(maxRecommendedTextBytes) characters used for \(profileLabel)"
+    }
   }
 
   public var canArmWrite: Bool {
@@ -305,6 +320,12 @@ public final class MainScreenViewModel: ObservableObject {
     uiState.statusAnnouncement = "Automatically start scanning on app launch \(stateText)."
   }
 
+  public func setDefaultStickerType(_ stickerType: StickerTypeProfile) {
+    preferencesRepository.setDefaultStickerType(stickerType)
+    uiState.settings = preferencesRepository.currentSettings
+    uiState.statusAnnouncement = "Default sticker type set to \(stickerType.displayName)."
+  }
+
   /// Handles a scanned sticker in the current operation mode (or simulated tag tap in tests).
   public func onTagDiscovered(parsedLabel: ParsedTagSpeakLabel?) {
     switch uiState.nfcMode {
@@ -312,7 +333,8 @@ public final class MainScreenViewModel: ObservableObject {
       let outcome = simulateOrEvaluateWriteOutcome(
         existingLabel: parsedLabel?.text,
         newLabel: uiState.draftLabelText,
-        maxCapacityBytes: parsedLabel?.maxCapacityBytes ?? TagSpeakNdefCodec.ntag213CapacityBytes,
+        maxCapacityBytes: parsedLabel?.maxCapacityBytes
+          ?? uiState.settings.defaultStickerType.ndefCapacityBytes,
         isWritable: parsedLabel?.isWritable ?? true
       )
       handleWriteOutcome(outcome)
@@ -388,10 +410,11 @@ public final class MainScreenViewModel: ObservableObject {
 
     let estimatedBytes = TagSpeakNdefCodec.estimateNdefMessageBytes(text: cleanNew)
     if estimatedBytes > maxCapacityBytes {
+      let maxTextChars = TagSpeakNdefCodec.maxTextBytesForTagCapacity(maxCapacityBytes)
       return .failure(
         reason: .labelTooLarge,
         details:
-          "Label requires \(estimatedBytes) bytes, exceeding \(maxCapacityBytes)-byte sticker capacity."
+          "Label is \(cleanNew.count) characters (\(estimatedBytes) total NDEF bytes), exceeding this sticker's \(maxTextChars)-character (\(maxCapacityBytes)-byte) capacity."
       )
     }
 

@@ -134,6 +134,44 @@ final class MainScreenViewModelTests: XCTestCase {
     h.viewModel.handleAppDidBecomeActive(isTriggeredByShortcut: true)
     XCTAssertEqual(h.fakeNfcDriver.readSessionStartedCount, 2)
   }
+
+  func testDefaultStickerTypeAndHardwareCapacity_updatesWarningsAndHonorsActualTagSize() {
+    let h = makeHarness()
+    let mediumText = String(repeating: "A", count: 120)
+    h.viewModel.updateDraftLabelText(mediumText)
+
+    // Exceeds default NTAG213 (~96 chars)
+    XCTAssertTrue(h.viewModel.uiState.isDraftOverRecommendedSize)
+    XCTAssertTrue(
+      h.viewModel.uiState.capacitySummaryText.contains(
+        "120 of 96 characters used for standard NTAG213 sticker"
+      )
+    )
+
+    // Switching Default Sticker Type to NTAG215 clears the warning
+    h.viewModel.setDefaultStickerType(.ntag215)
+    XCTAssertFalse(h.viewModel.uiState.isDraftOverRecommendedSize)
+    XCTAssertTrue(
+      h.viewModel.uiState.capacitySummaryText.contains(
+        "120 of 448 characters used for medium NTAG215 sticker"
+      )
+    )
+
+    // Scanning an older low-capacity 56-byte tag during write still fails with accurate hardware capacity message
+    h.viewModel.setConfirmBeforeOverwrite(false)
+    h.viewModel.toggleArmWrite()
+    let oldSmallTag = ParsedTagSpeakLabel(
+      text: "",
+      hasTagSpeakAar: false,
+      usedBytes: 0,
+      maxCapacityBytes: 56,
+      isWritable: true
+    )
+    h.viewModel.onTagDiscovered(parsedLabel: oldSmallTag)
+
+    XCTAssertTrue(h.viewModel.uiState.statusAnnouncement.contains("56-byte"))
+    XCTAssertTrue(h.viewModel.uiState.statusAnnouncement.contains("15-character"))
+  }
 }
 
 private final class RecordingSpeechSpeaker: SpeechSpeaker {

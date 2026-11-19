@@ -4,6 +4,7 @@ import android.nfc.Tag
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tagspeak.app.data.InMemoryPreferencesRepository
+import com.tagspeak.app.data.StickerTypeProfile
 import com.tagspeak.app.data.TagSpeakPreferencesRepository
 import com.tagspeak.app.data.TagSpeakSettings
 import com.tagspeak.app.nfc.NfcTagOperations
@@ -56,14 +57,27 @@ data class TagSpeakUiState(
     "Ready. Enter a label to write, or touch any TagSpeak sticker to read it.",
   val settings: TagSpeakSettings = TagSpeakSettings(),
 ) {
+  val draftCharacterCount: Int
+    get() = draftLabelText.trim().length
+
   val draftTextUtf8Bytes: Int
     get() = draftLabelText.trim().toByteArray(StandardCharsets.UTF_8).size
 
   val maxRecommendedTextBytes: Int
-    get() = TagSpeakNdefCodec.NTAG213_MAX_TEXT_BYTES
+    get() = settings.defaultStickerType.maxRecommendedTextBytes
 
   val isDraftOverRecommendedSize: Boolean
     get() = draftTextUtf8Bytes > maxRecommendedTextBytes
+
+  val capacitySummaryText: String
+    get() {
+      val profileLabel = settings.defaultStickerType.shortLabel
+      return if (draftTextUtf8Bytes != draftCharacterCount) {
+        "$draftCharacterCount of $maxRecommendedTextBytes characters ($draftTextUtf8Bytes bytes) used for $profileLabel"
+      } else {
+        "$draftTextUtf8Bytes of $maxRecommendedTextBytes characters used for $profileLabel"
+      }
+    }
 
   val canArmWrite: Boolean
     get() = draftLabelText.isNotBlank()
@@ -284,6 +298,15 @@ class MainScreenViewModel(
     }
   }
 
+  fun setDefaultStickerType(stickerType: StickerTypeProfile) {
+    preferencesRepository.setDefaultStickerType(stickerType)
+    internalState.update {
+      it.copy(
+        statusAnnouncement = "Default sticker type set to ${stickerType.displayName}."
+      )
+    }
+  }
+
   /**
    * Handles a hardware NFC [Tag] and optional pre-parsed [ParsedTagSpeakLabel] when the app is
    * in the foreground.
@@ -315,6 +338,8 @@ class MainScreenViewModel(
               newLabel = current.draftLabelText,
               confirmBeforeOverwrite = prefs.confirmBeforeOverwrite,
               overwriteAlreadyConfirmed = current.overwriteConfirmedForNextTap,
+              maxCapacityBytes =
+                parsedFromIntent?.maxCapacityBytes ?: prefs.defaultStickerType.ndefCapacityBytes,
             )
           handleWriteOutcome(simulatedOutcome)
         }
@@ -379,6 +404,8 @@ class MainScreenViewModel(
     newLabel: String,
     confirmBeforeOverwrite: Boolean,
     overwriteAlreadyConfirmed: Boolean,
+    maxCapacityBytes: Int =
+      preferencesRepository.settings.value.defaultStickerType.ndefCapacityBytes,
   ): TagWriteOutcome {
     val cleanNew = newLabel.trim()
     if (cleanNew.isEmpty()) {
@@ -397,11 +424,12 @@ class MainScreenViewModel(
     }
 
     val estimatedBytes = TagSpeakNdefCodec.estimateNdefMessageBytes(cleanNew)
-    if (estimatedBytes > TagSpeakNdefCodec.NTAG213_CAPACITY_BYTES) {
+    if (estimatedBytes > maxCapacityBytes) {
+      val maxTextChars = TagSpeakNdefCodec.maxTextBytesForTagCapacity(maxCapacityBytes)
       return TagWriteOutcome.Failure(
         reason = WriteFailureReason.LABEL_TOO_LARGE,
         details =
-          "Label requires $estimatedBytes bytes, exceeding standard 137-byte NTAG213 capacity.",
+          "Label is ${cleanNew.length} characters ($estimatedBytes total NDEF bytes), exceeding this sticker's $maxTextChars-character ($maxCapacityBytes-byte) capacity.",
       )
     }
 
@@ -409,7 +437,7 @@ class MainScreenViewModel(
       writtenLabel = cleanNew,
       previousLabel = existingLabel?.takeIf { it.isNotBlank() },
       bytesWritten = estimatedBytes,
-      maxCapacityBytes = TagSpeakNdefCodec.NTAG213_CAPACITY_BYTES,
+      maxCapacityBytes = maxCapacityBytes,
     )
   }
 

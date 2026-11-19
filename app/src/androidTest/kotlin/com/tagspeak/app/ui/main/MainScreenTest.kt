@@ -97,7 +97,7 @@ class MainScreenTest {
       .assert(
         SemanticsMatcher.expectValue(
           SemanticsProperties.ContentDescription,
-          listOf("Status: Label written to sticker: \"Cinnamon\"."),
+          listOf("Current Status: Label written to sticker: \"Cinnamon\"."),
         )
       )
   }

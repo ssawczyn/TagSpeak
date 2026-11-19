@@ -28,5 +28,7 @@
     <string name="setting_speak_after_write_title">Speak confirmation after writing a sticker</string>
     <string name="setting_speak_after_write_desc">Automatically announce when a label has been written to a sticker</string>
     <string name="setting_speech_rate_heading">TagSpeak Speech Speed</string>
+    <string name="setting_default_sticker_type_heading">Default Sticker Type</string>
+    <string name="setting_default_sticker_type_desc">Select the sticker capacity used for character limit warnings on the Write Label screen.</string>
     <string name="test_speech_button">Test Speech Output</string>
 </resources>
