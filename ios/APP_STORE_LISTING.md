@@ -31,9 +31,9 @@ Create and read spoken labels on standard NFC stickers with VoiceOver, the Actio
 
 ### Description (Max 4,000 characters)
 ```text
-TagSpeak is an accessibility-first utility designed for blind and low-vision users to create, read, and edit spoken labels on inexpensive, off-the-shelf NFC stickers (such as NTAG213, NTAG215, and NTAG216).
+TagSpeak is an accessibility-first utility that enables blind and low-vision users to label everyday items—such as canned goods, spices, medications, clothing, and cables—using inexpensive, off-the-shelf NFC stickers (such as NTAG213, NTAG215, and NTAG216).
 
-Every label is stored directly on the physical NFC sticker using a standardized NDEF text record. TagSpeak requires zero accounts, zero cloud subscriptions, zero internet access, and no proprietary tag lock-in. Stickers written with TagSpeak on iOS can be read by TagSpeak on Android and vice versa.
+Every spoken label is stored directly on the physical NFC sticker using a standardized NDEF text record. TagSpeak requires zero accounts, zero subscriptions, zero internet access, and no proprietary tag lock-in. Stickers written with TagSpeak on iOS can be read by TagSpeak on Android and vice versa.
 
 KEY FEATURES
 
