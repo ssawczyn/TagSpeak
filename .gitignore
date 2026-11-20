@@ -15,6 +15,7 @@ app/build/
 *.keystore
 keystore.properties
 /play-store-assets/
+/app-store-assets/
 
 # iOS / Swift / Xcode build artifacts
 ios/.build/
